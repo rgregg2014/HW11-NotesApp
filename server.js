@@ -29,9 +29,7 @@ app.get("/notes", function (req, res) {
 app.post("/api/notes", function (req, res) {
   //reads data from db.json
   fs.readFile(__dirname + "/db/db.json", "utf8", function (err, notes) {
-    //if there's an error, throw it
     if (err) throw err;
-    //
     notes = JSON.parse(notes);
     let id = notes[notes.length - 1].id + 1;
     let newNote = { title: req.body.title, text: req.body.text, id: id };
@@ -53,11 +51,11 @@ app.get("/api/notes", function (req, res) {
   //pulls data from db.js
   fs.readFile(__dirname + "/db/db.json", "utf8", function (err, data) {
     if (err) throw err;
-    console.log("This is data", data);
     res.json(JSON.parse(data));
   });
 });
 
+//Still working on this. Delete button does not currently work.
 app.delete("/api/notes/:id", function (req, res) {
   const noteID = JSON.parse(req.params.id);
   console.log(noteID);
@@ -77,12 +75,13 @@ app.delete("/api/notes/:id", function (req, res) {
 });
 
 app.put("api/notes/:id", function (req, res) {
+  //-----Grabs notes from db.json
   const noteID = JSON.parse(req.params.id);
-  console.log(noteID);
   fs.readFile(__dirname + "db/db.json", "utf8", function (err, notes) {
     if (err) throw err;
     notes.JSON.parse(notes);
     notes = notes.filter((val) => val.id !== noteID);
+    //-----Writes notes to db.json
     fs.writeFile(
       __dirname + "db/db.json",
       JSON.stringify(notes),
@@ -93,46 +92,8 @@ app.put("api/notes/:id", function (req, res) {
     );
   });
 });
-
-// (app) => {
-//   fs.readFile("db/db.json", "utf8", (err, data) => {
-//     if (err) throw err;
-//     let notes = JSON.parse(data);
-//     //API routes ======================================================================================
-//     //-----read db.json and retun saved notes
-//     app.get("/api/notes", function (req, res) {
-//       res.JSON(notes);
-//     });
-//     //-----receives new note with an id, adds it to db.json, returns
-//     app.post("/api/notes/:id", function (req, res) {
-//       res.JSON(notes[req.params.id]);
-//     });
-//     //-----deletes note with an id
-//     app.delete("/api/notes/:id", function (req, res) {
-//       notes.splice(req.params.id, 1);
-//       updateDb();
-//       console.log("Note deleted");
-//     });
-//     //------displays notes.html @ /notes
-//     app.get("/notes", function (req, res) {
-//       res.sendFile(path.join(__dirname, "../public/notes.html"));
-//     });
-//     //-----displays index.html as default
-//     app.get("*", function (req, res) {
-//       res.sendFile(path.join(__dirname, "../public/index.html"));
-//     });
-//     //-----updates db.json whenever a note is added or deleted
-//     function updateDb() {
-//       fs.writeFile("db/db.json", JSON.stringify(notes, "\t"), (err) => {
-//         if (err) throw err;
-//         return true;
-//       });
-//     }
-//   });
-//   console.log("Export working!");
-// };
-
 // SERVER LISTENER =========================================================================================
 app.listen(PORT, () =>
+  //-----Console log left for convenience of local use
   console.log(`App listening on PORT http://localhost:${PORT}`)
 );
